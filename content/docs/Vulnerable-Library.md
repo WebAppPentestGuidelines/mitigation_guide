@@ -2,7 +2,7 @@
 title: "既知の脆弱なライブラリの利用による問題"
 description: "脆弱性診断の指摘事項に対するベストプラクティスが実施できない場合の緩和策ガイド"
 weight: 6
-bookToc: false
+bookToc: true
 draft: false
 ---
 
