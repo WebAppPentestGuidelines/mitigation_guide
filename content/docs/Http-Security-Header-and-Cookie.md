@@ -1,8 +1,15 @@
-# HTTPセキュリティヘッダ・Cookie属性編
+---
+title: "HTTPセキュリティヘッダ・Cookie属性"
+description: "脆弱性診断の指摘事項に対するベストプラクティスが実施できない場合の緩和策ガイド"
+weight: 4
+bookToc: true
+draft: false
+---
+
+# HTTPセキュリティヘッダ・Cookie属性
 ## 1. 脆弱性の概要 / 影響
 
 クロスサイトスクリプティング（XSS）、セッションハイジャック、クリックジャッキング等の攻撃を防御するメカニズムであるHTTPセキュリティヘッダ（HSTS、CSP、X-Frame-Options等）やCookie属性（Secure、HttpOnly、SameSite）を設定することはシステムの安全性を確保するうえで重要であるにもかかわらず、セキュリティ診断の実施後にこれらの不備が指摘されるケースがしばしば見受けられます。
-
 
 
 > これらのセキュリティ機構はリスクの『軽減』を目的とした多層防御の一部であり、アプリケーション側の脆弱性（不適切なエスケープ等）そのものを排除するものではないことに注意してください。緩和策の実施後もリスクは残存し、恒久的な対策への移行を計画・実行する必要があります。
@@ -13,7 +20,7 @@
 |---|---|---|
 | **Strict-Transport-Security (HSTS)** | HTTPS接続の強制 | 中間者がHTTPS接続をHTTPにダウングレードし、通信内容を盗聴・改ざん可能 |
 | **Content-Security-Policy (CSP)** | リソース読み込み制限 | XSS攻撃による悪意あるスクリプトの実行、データ窃取、フィッシング等の被害拡大 |
-| **X-Frame-Options** | クリックジャッキング防止 | 悪意あるサイトにiframeで埋め込まれ、ユーザの意図しない操作を誘発される |
+| **X-Frame-Options** | クリックジャッキング防止 | 悪意あるサイトにiframeで埋め込まれ、ユーザーの意図しない操作を誘発される |
 | **X-Content-Type-Options** | MIMEスニッフィング防止 | ブラウザのMIMEタイプ推測により、悪意あるファイルが意図しない形式で実行される |
 | **Referrer-Policy** | Referer情報の制御 | 機密情報を含むURLが外部サイトに漏洩 |
 
@@ -23,7 +30,7 @@
 |---|---|---|
 | **Secure** | HTTPS通信でのみCookie送信 | 中間者攻撃により、HTTP通信経由でCookieが窃取され、セッションハイジャックされる |
 | **HttpOnly** | JavaScriptからのCookieアクセス禁止 | XSS攻撃により、認証Cookieが窃取され、なりすましや権限昇格が可能になる |
-| **SameSite** | クロスサイトリクエストでのCookie送信制御 | CSRF攻撃により、ユーザの意図しない操作が実行される（パスワード変更、送金等） *1 |
+| **SameSite** | クロスサイトリクエストでのCookie送信制御 | CSRF攻撃により、ユーザーの意図しない操作が実行される（パスワード変更、送金等） *1 |
 
 > *1 Google Chrome や Microsoft Edge 等のモダンブラウザでは、SameSite 属性が省略された Cookie に対しても `SameSite=Lax` 相当の挙動がデフォルトで適用されるため、クロスサイトの POST リクエストでは Cookie が送信されないなど、限定的ながらブラウザによる CSRF 保護を受けられます。
 
@@ -67,6 +74,7 @@ Firefox には「SameSite 属性が省略された Cookie をデフォルトで 
 | **__Secure-** | `Secure` 属性を**必須化**して、HTTPSでのみ送信されるCookieにする（平文HTTPへの送信をブラウザ側で防ぐ）|
 
 >ブラウザ毎にCookieの振る舞いは異なるため、Cookieに依存した実装を行う場合は必ず各ブラウザのリリースを見て確認してください。
+
 ---
 
 ## 2. 根本的な対策
@@ -75,7 +83,7 @@ Firefox には「SameSite 属性が省略された Cookie をデフォルトで 
 
 理想的には、Webアプリケーションまたはリバースプロキシ（Nginx、Apache等）で以下のヘッダを設定します。
 
-```
+```http
 (HTTPレスポンスヘッダ)
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'
@@ -90,7 +98,7 @@ Referrer-Policy: strict-origin-when-cross-origin
 
 認証・セッション管理に使用するCookieには、以下の属性を設定します：
 
-```
+```http
 Set-Cookie: sessionId=xxx; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=3600
 ```
 
@@ -164,7 +172,7 @@ Web Application Firewall（WAF）を導入し、クエリパラメータやリ�
 JavaScriptからCookieにアクセスする必要がある機能（UI設定の保存、クライアントサイドのトラッキング等）では、HttpOnly属性を付与できない。これは、HttpOnlyが「JavaScriptからのアクセス禁止」を目的としているため、機能要件と根本的に矛盾する。
 
 **具体的な例：**
-- ユーザが選択したUIの設定をCookieに保存
+- ユーザーが選択したUIの設定をCookieに保存
 - 言語設定の保存
 - クライアントサイドでのセッション管理
 
@@ -207,7 +215,7 @@ HttpOnlyが使用できない場合、XSS攻撃のリスクが高まるため、
 
 **(A) 段階的なロールアウト**
 
-- **カナリアリリース**: 一部のユーザ・サービスにのみ変更を適用し、影響を監視します。
+- **カナリアリリース**: 一部のユーザー・サービスにのみ変更を適用し、影響を監視します。
 - **Feature Flag**: 設定変更をFeature Flagで制御し、問題発生時に即座にロールバック可能にする。
 
 **(B) テスト環境での検証強化**
