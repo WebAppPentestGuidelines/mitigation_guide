@@ -1,0 +1,15 @@
+{
+  "name": "脆弱性診断の指摘事項に対するベストプラクティスが実施できない場合の緩和策ガイド",
+  "short_name": "脆弱性診断の指摘事項に対するベストプラクティスが実施できない場合の緩和策ガイド",
+  "start_url": "/mitigation_guide/",
+  "scope": "/mitigation_guide/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/mitigation_guide/favicon.svg",
+      "sizes": "512x512"
+    }
+  ]
+}

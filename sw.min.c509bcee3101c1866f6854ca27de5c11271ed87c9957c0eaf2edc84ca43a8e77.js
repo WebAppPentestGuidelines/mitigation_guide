@@ -1,0 +1,1 @@
+navigator.serviceWorker&&navigator.serviceWorker.register("/mitigation_guide/sw.js",{scope:"/mitigation_guide/"})
