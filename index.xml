@@ -337,7 +337,7 @@
 &lt;h4 id="312-独自エスケープ処理"&gt;3.1.2 独自エスケープ処理&lt;a class="anchor" href="#312-%e7%8b%ac%e8%87%aa%e3%82%a8%e3%82%b9%e3%82%b1%e3%83%bc%e3%83%97%e5%87%a6%e7%90%86"&gt;#&lt;/a&gt;&lt;/h4&gt;
 &lt;p&gt;OWASPガイドラインでは推奨されていませんが、プリペアードステートメントが利用できない場合の最終手段として使用します。&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;DBエンジン固有の仕様への準拠&lt;/strong&gt;: PHPのビルトイン関数である &lt;code&gt;mysql_real_escape_string&lt;/code&gt; 相当の処理など、使用するDBエンジンの仕様に完全に準拠したエスケープ関数を使用します。※なお、&lt;code&gt;mysql_real_escape_string&lt;/code&gt;のサポートはPHP5までで、現在使用されている 8.x系では削除されています。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DBエンジン固有の仕様への準拠&lt;/strong&gt;: PHPのビルトイン関数である &lt;code&gt;mysql_real_escape_string&lt;/code&gt; 相当の処理など、使用するDBエンジンの仕様に完全に準拠したエスケープ関数を使用します。※なお、&lt;code&gt;mysql_real_escape_string&lt;/code&gt;のサポートはPHP5までで、現在使用されている 7.x系では削除されています。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;メタ文字の無害化&lt;/strong&gt;: &lt;code&gt;'&lt;/code&gt;（シングルクォート）、&lt;code&gt;&amp;quot;&lt;/code&gt;（ダブルクォート）、&lt;code&gt;\&lt;/code&gt;（バックスラッシュ）、&lt;code&gt;;&lt;/code&gt;（セミコロン）などを確実にエスケープします。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id="32-データベース層"&gt;3.2 データベース層&lt;a class="anchor" href="#32-%e3%83%87%e3%83%bc%e3%82%bf%e3%83%99%e3%83%bc%e3%82%b9%e5%b1%a4"&gt;#&lt;/a&gt;&lt;/h3&gt;
