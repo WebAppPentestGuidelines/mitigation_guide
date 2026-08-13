@@ -38,9 +38,9 @@ draft: false
 
 SameSite 属性は仕様が複雑で、ブラウザにより挙動が異なります。たとえば Chromium 系のブラウザでは、**SameSite 属性が明示されていない Cookie** に対してデフォルトで `SameSite=Lax` 相当が適用されますが、Cookie がブラウザに保存されてから **2 分間** は例外的にクロスサイトの POST リクエストでも送信される仕様があります。
 
-一方 Firefox では SameSite 属性が明示されていない Cookie に対するデフォルト保護が存在しないため、開発者が明示的に `SameSite=Lax` または `SameSite=Strict` を設定しない限り CSRF 保護を受けられません。
+一方 Firefox では SameSite 属性が明示されていない Cookie に対するデフォルト保護が存在しないため、開発者が明示的に `SameSite=Lax` または `SameSite=Strict` を設定しない限りブラウザのCSRF保護を受けることができません。
 
-以下は、SameSite属性の制御によりCookieが送信されるかをまとめた表です。「✓」がマークされている箇所がクロスサイトから送信されるパターンを示しています。
+以下は、SameSite属性の制御によりブラウザからCookieが送信されるかどうかをまとめた表です。「✓」がマークされている箇所がクロスサイトから送信されるパターンを示しています。
 
 #### SameSite属性の有無によるCookieの挙動（Chromium 系）
 
@@ -53,7 +53,7 @@ SameSite 属性は仕様が複雑で、ブラウザにより挙動が異なり�
 
 #### SameSite属性の有無によるCookieの挙動（Firefox）
 
-Firefox には「SameSite 属性が省略された Cookie をデフォルトで `SameSite=Lax` 相当として扱う」設定 (`network.cookie.sameSite.LaxByDefault`) が存在しますが、**現在も既定で無効** になっています。そのため SameSite 属性を省略した Cookie は `None` と同等に扱われ、判定はシンプルになる一方で、**`SameSite` 属性が未指定の Cookie は CSRF 保護を一切受けられない** 点に注意が必要です。
+Firefox にはChromium系と同様に「SameSite 属性が省略された Cookie をデフォルトで `SameSite=Lax` 相当として扱う」設定 (`network.cookie.sameSite.LaxByDefault`) が存在しますが、**現在も既定で無効** になっています。そのため SameSite 属性を省略した Cookie は `None` と同等に扱われ、判定はシンプルになる一方で、**`SameSite` 属性が未指定の Cookie は CSRF 保護を一切受けられない** 点に注意が必要です。
 
 | 送信方法 | Strict | Lax（明示） | default<br>（属性なし） | None |
 |---|:--:|:--:|:--:|:--:|
@@ -62,7 +62,7 @@ Firefox には「SameSite 属性が省略された Cookie をデフォルトで 
 | ③ クロスサイトから読み込まれるサブリソース（iframe 等） | ✗ | ✗ | **✓** | ✓ |
 
 > Chromium 系との主な違い
-> - `default（属性なし）` 列が `None` と同じ挙動になる（太字部分）
+> - `default（属性なし）` 列が `None` と同じ挙動になる
 > - POST の判定に時間的な例外が無い
 
 
@@ -83,8 +83,7 @@ Firefox には「SameSite 属性が省略された Cookie をデフォルトで 
 
 理想的には、Webアプリケーションまたはリバースプロキシ（Nginx、Apache等）で以下のヘッダを設定します。
 
-```http
-(HTTPレスポンスヘッダ)
+``` 
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'
 X-Frame-Options: DENY
@@ -98,7 +97,7 @@ Referrer-Policy: strict-origin-when-cross-origin
 
 認証・セッション管理に使用するCookieには、以下の属性を設定します：
 
-```http
+``` 
 Set-Cookie: sessionId=xxx; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=3600
 ```
 
@@ -127,9 +126,11 @@ Set-Cookie: sessionId=xxx; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=36
 - AWS ALBが生成する`AWSALB` Cookieは、Sticky Session用に暗号化された情報を含むが、HttpOnlyフラグを設定する機能を提供していない
 - このCookieがWebサーバーに渡ると、Webサーバーがそれを理解できず、ロードバランサーによるセッション維持が機能しなくなる可能性がある
 
+>脆弱性診断で指摘されたCookie属性の不備においても、そのCookieの目的を確認しましょう。(例:認証・認可・機密情報の保持に利用されているか) ロードバランサーのルーティング制御のみを目的とするCookieの場合、認証Cookieが悪用された場合と同様にセッションがなりすまされるとは限らないためです。
+
 #### ケース①の緩和策
 
-`AWSALB` のような共通基盤生成 Cookie に `HttpOnly` や `SameSite` を付与できない場合、本来これらの属性で抑止していた **XSS による Cookie 窃取** と **CSRF によるなりすましリクエスト** の 2 つの攻撃経路が露出します。Cookie 属性に頼れない以上、これらの攻撃そのものを WAF とアプリケーション側の両面から抑える方針に切り替えます。
+共通基盤生成 Cookie に `HttpOnly` や `SameSite` を付与できず、Cookie 属性に頼れない以上はこれらの攻撃そのものを WAF とアプリケーション側の両面から抑える方針に切り替えます。
 
 **(A) WAF/シグネチャによる XSS 対策**
 
@@ -144,7 +145,7 @@ Web Application Firewall（WAF）を導入し、クエリパラメータやリ�
 
 ### ケース②
 
-ロードバランサー（ALB等）とバックエンドWebサーバー間の通信がHTTP（非暗号化）で行われている場合、WebサーバーはSecure属性を持つCookieを発行できない。(一部のシステムで内部通信の暗号化処理によるオーバーヘッドを避けるため、意図的にHTTPを使用しているケースで発生)
+ロードバランサー（ALB等）とバックエンドWebサーバー間の通信がHTTP（非暗号化）で行われている場合、WebサーバーがSecure属性を持つCookieを発行した場合にTLS終端より先でそのCookieが利用できない。(一部のシステムで内部通信の暗号化処理によるオーバーヘッドを避けるため、意図的にHTTPを使用しているケースで発生)
 
 **具体的な例：**
 - ALBはHTTPSでクライアントと通信
