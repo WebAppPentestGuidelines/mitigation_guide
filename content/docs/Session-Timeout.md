@@ -76,7 +76,7 @@ OWASPおよびNISTの文書では、タイムアウト値の目安として以�
 
 これらの緩和策はあくまでリスク低減策として位置づけ、セクション2で述べた適切なタイムアウト設定を根本対策として継続的に見直すことが重要です。緩和策を導入した場合でも、それを恒久対策とみなすのではなく、タイムアウト値の短縮や認証方式の強化を含め、継続的に改善を検討する必要があります。
 
-## 5. 参考文献
+## 5. 出典・参考文献
 - https://pages.nist.gov/800-63-4/sp800-63b.html
 - https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html
 - https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
