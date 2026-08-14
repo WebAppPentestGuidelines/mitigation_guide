@@ -105,7 +105,7 @@ HTTPリクエストレベルで一般的なSQLインジェクション攻撃パ�
 
 これらの緩和策はリスク低減策として位置づけ、根本対策（プリペアードステートメントへの移行）を継続的に検討することが重要です。緩和策を導入した場合でも、それを恒久対策とみなすのではなく、システム刷新の計画を維持し続けることが求められます。
 
-## 5. 参考文献
+## 5. 出典・参考文献
 
 *   [OWASP SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
 *   [Oracle Database Security Guide: Using SQL Firewall](https://docs.oracle.com/en/database/oracle/oracle-database/)
